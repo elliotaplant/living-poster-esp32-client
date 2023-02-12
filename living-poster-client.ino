@@ -12,7 +12,6 @@ struct Credentials
 };
 
 // Establishing Local server at port 80
-Credentials credentials;
 int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
 
 void setup()
@@ -26,10 +25,12 @@ void loop()
 {
   // No looping here, just a single pass through
   // Wake up
+  writeCredentials({"nothing", "nobody"});
+
   // Read WiFi credentials
-  wifiSetup();
+  Credentials credentials = readCredentials();
   // Connect to wifi or make a server to get wifi credentials
-  wifiConnectLoop();
+  wifiConnectLoop(credentials);
   // query conditions
   requestURL("example.com");
 
@@ -44,15 +45,8 @@ void loop()
 
 // WiFi ----------------------------------------------------------
 
-// Gets credentials from disk, if they exist
-void wifiSetup()
-{
-  Serial.println("Reading EEPROM ssid");
-  credentials = readCredentials();
-}
-
 // Uses credentials to connect to WiFi or creates a server to get those credentials
-void wifiConnectLoop()
+void wifiConnectLoop(Credentials credentials)
 {
   for (int i = 0; i < NUM_WIFI_ACCESS_POINT_ATTEMPTS; i++)
   {
