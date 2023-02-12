@@ -1,10 +1,19 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <WebServer.h>
 #include <EEPROM.h>
+
+WebServer server(80);
 
 struct Credentials
 {
   String ssid;
   String password;
 };
+
+// Establishing Local server at port 80
+Credentials credentials;
+int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
 
 void setup()
 {
@@ -26,9 +35,59 @@ void loop()
 
   // interpret conditions to dial angle
   // change the dial angles
+  moveServos();
+
   // find the number of ms until next switch (maybe get time from response?)
   // Hibernate that many ms
   hibernate();
+}
+
+// WiFi ----------------------------------------------------------
+
+// Gets credentials from disk, if they exist
+void wifiSetup()
+{
+  Serial.println("Reading EEPROM ssid");
+  credentials = readCredentials();
+}
+
+// Uses credentials to connect to WiFi or creates a server to get those credentials
+void wifiConnectLoop()
+{
+  for (int i = 0; i < NUM_WIFI_ACCESS_POINT_ATTEMPTS; i++)
+  {
+    // Attempt to connect to wifi
+    connectWifi(credentials);
+
+    // If successful, exit
+    if (testWifi())
+      return;
+
+    // If unsuccessful, create the configuration server
+    setupAccessPoint();
+  }
+}
+
+void connectWifi(Credentials credentials)
+{
+  WiFi.begin(credentials.ssid.c_str(), credentials.password.c_str());
+}
+
+bool testWifi()
+{
+  Serial.print("Testing WiFi connection ");
+  for (int i = 0; i < 20; i++)
+  {
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      Serial.println("WiFi connection successful");
+      return true;
+    }
+    delay(500);
+    Serial.print("*");
+  }
+  Serial.println("Failed to connect to WiFi");
+  return false;
 }
 
 // Access point --------------------------------------------------
@@ -70,12 +129,14 @@ String getSsidOptions()
   delay(100);
   Serial.println("Scanning available WiFi networks");
   int n = WiFi.scanNetworks();
-  Serial.println("Found " + n + " networks");
+  Serial.print("Found ");
+  Serial.print(n);
+  Serial.println(" networks");
 
   String ssidOptions = "";
   for (int i = 0; i < n; ++i)
   {
-    String ssid = WiFI.SSID(i);
+    String ssid = WiFi.SSID(i);
     ssidOptions += "<option>" + ssid + "</option>";
   }
   return ssidOptions;
@@ -83,15 +144,11 @@ String getSsidOptions()
 
 // Server --------------------------------------------------------------------
 // Server to gather WiFi credentials
-#include <WiFi.h>
-#include <WebServer.h>
-#include <EEPROM.h>
-
-WebServer server(80);
 
 void createWebServer(String ssidOptions)
 {
-  server.on("/", []()
+  // this is a capture?
+  server.on("/", [ssidOptions]()
             {
     String ipStr = ipToString(WiFi.softAPIP());
     String content = "<!DOCTYPE html>"
@@ -181,27 +238,10 @@ void createWebServer(String ssidOptions)
 
 String ipToString(IPAddress ipAddress)
 {
-  return String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-}
-
-String getSsidOptions()
-{
-  String ssidOptions = "";
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
-  delay(100);
-  Serial.println("Scanning available WiFi networks");
-  int n = WiFi.scanNetworks();
-  Serial.print("Found ");
-  Serial.print(n);
-  Serial.print(" networks");
-
-  for (int i = 0; i < n; ++i)
-  {
-    String ssid = WiFI.SSID(i);
-    ssidOptions += "<option>" + ssid + "</option>";
-  }
-  return ssidOptions;
+  return String(ipAddress[0]) + '.' +
+         String(ipAddress[1]) + '.' +
+         String(ipAddress[2]) + '.' +
+         String(ipAddress[3]);
 }
 
 // EEPROM ----------------------------------------------------
@@ -240,7 +280,7 @@ String readEEPROM(int start, int end)
   {
     content += char(EEPROM.read(i));
   }
-  return content
+  return content;
 }
 
 void clearEEPROM(int length)
@@ -258,4 +298,68 @@ void writeEEPROM(int start, String content)
   {
     EEPROM.write(i, content[i]);
   }
+}
+
+// Hibernate ---------------------------------------------------
+const uint32_t SLEEP_DURATION = 4 * 1000000; // µs
+
+void hibernate()
+{
+  Serial.print("Hibernating for ");
+  Serial.print(SLEEP_DURATION);
+  Serial.println(" us");
+  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_OFF);
+  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
+  esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_OFF);
+
+  esp_sleep_enable_timer_wakeup(SLEEP_DURATION);
+  esp_deep_sleep_start();
+}
+
+// Request -------------------------------------------------
+void requestURL(const char *host)
+{
+  Serial.println("Connecting to domain: " + String(host));
+
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  if (!client.connect(host, 80)) // May need to change port to 443?
+  {
+    Serial.println("connection failed");
+    return;
+  }
+
+  Serial.println("Connected!");
+
+  // This will send the request to the server
+  client.print((String) "GET / HTTP/1.1\r\n" +
+               "Host: " + String(host) + "\r\n" +
+               "Connection: close\r\n\r\n");
+  unsigned long timeout = millis();
+  while (client.available() == 0)
+  {
+    if (millis() - timeout > 5000)
+    {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+
+  // Read all the lines of the reply from server and print them to Serial
+  while (client.available())
+  {
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+  }
+
+  Serial.println("Closing connection");
+  client.stop();
+}
+
+// Servos -----------------------------------------------
+void moveServos()
+{
+  Serial.println("Moving servos (or I would be, if I had them)");
 }

@@ -1,0 +1,81 @@
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In function 'String getSsidOptions()':
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:132:31: error: invalid operands of types 'const char*' and 'const char [10]' to binary 'operator+'
+   Serial.println("Found " + n + " networks");
+                  ~~~~~~~~~~~~~^~~~~~~~~~~~~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:137:19: error: 'WiFI' was not declared in this scope
+     String ssid = WiFI.SSID(i);
+                   ^~~~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:137:19: note: suggested alternative: 'WiFi'
+     String ssid = WiFI.SSID(i);
+                   ^~~~
+                   WiFi
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In lambda function:
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:182:7: error: 'ssidOptions' is not captured
+       ssidOptions +
+       ^~~~~~~~~~~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:148:19: note: the lambda has no capture-default
+   server.on("/", []()
+                   ^
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:146:29: note: 'String ssidOptions' declared here
+ void createWebServer(String ssidOptions)
+                      ~~~~~~~^~~~~~~~~~~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In function 'String ipToString(IPAddress)':
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:238:17: error: 'ip' was not declared in this scope
+   return String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+                 ^~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: At global scope:
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:241:8: error: redefinition of 'String getSsidOptions()'
+ String getSsidOptions()
+        ^~~~~~~~~~~~~~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:125:8: note: 'String getSsidOptions()' previously defined here
+ String getSsidOptions()
+        ^~~~~~~~~~~~~~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In function 'String getSsidOptions()':
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:255:19: error: 'WiFI' was not declared in this scope
+     String ssid = WiFI.SSID(i);
+                   ^~~~
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:255:19: note: suggested alternative: 'WiFi'
+     String ssid = WiFI.SSID(i);
+                   ^~~~
+                   WiFi
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In function 'String readEEPROM(int, int)':
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:297:17: error: expected ';' before '}' token
+   return content
+                 ^
+                 ;
+ }
+ ~                
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In function 'void hibernate()':
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:322:53: error: expected ')' before string constant
+   Serial.println("Hibernating for " + SLEEP_DURATION " us");
+                 ~                                   ^~~~~~
+                                                     )
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In function 'void requestURL(String)':
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:339:31: error: no matching function for call to 'WiFiClient::connect(String&, int)'
+   if (!client.connect(host, 80)) // May need to change port to 443?
+                               ^
+In file included from /Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFi.h:37,
+                 from /Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:1:
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:52:9: note: candidate: 'virtual int WiFiClient::connect(IPAddress, uint16_t)'
+     int connect(IPAddress ip, uint16_t port);
+         ^~~~~~~
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:52:9: note:   no known conversion for argument 1 from 'String' to 'IPAddress'
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:53:9: note: candidate: 'virtual int WiFiClient::connect(IPAddress, uint16_t, int32_t)'
+     int connect(IPAddress ip, uint16_t port, int32_t timeout);
+         ^~~~~~~
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:53:9: note:   candidate expects 3 arguments, 2 provided
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:54:9: note: candidate: 'virtual int WiFiClient::connect(const char*, uint16_t)'
+     int connect(const char *host, uint16_t port);
+         ^~~~~~~
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:54:9: note:   no known conversion for argument 1 from 'String' to 'const char*'
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:55:9: note: candidate: 'virtual int WiFiClient::connect(const char*, uint16_t, int32_t)'
+     int connect(const char *host, uint16_t port, int32_t timeout);
+         ^~~~~~~
+/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/libraries/WiFi/src/WiFiClient.h:55:9: note:   candidate expects 3 arguments, 2 provided
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino: In function 'void moveServos()':
+/Users/elliot/Documents/Arduino/esp32/living-poster-client/living-poster-client.ino:376:65: error: expected ';' before '}' token
+   Serial.println("Moving servos (or I would be, if I had them)")
+                                                                 ^
+                                                                 ;
+ }
+ ~           
