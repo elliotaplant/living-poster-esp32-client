@@ -4,6 +4,8 @@
 #include <EEPROM.h>
 
 WebServer server(80);
+const int BUTTON_PIN = 15;
+const int LED_PIN = 5;
 
 struct Credentials
 {
@@ -13,32 +15,35 @@ struct Credentials
 
 // Establishing Local server at port 80
 int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
+int EEPROM_SSID_SPACE = 32;
 
 void setup()
 {
   // Setup baud rate, pins
   Serial.begin(115200); // Initialize Serial monitor with baud rate
   EEPROM.begin(512);    // Initializing EEPROM with 512 bytes
+  pinMode(BUTTON_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW); // LED off
 }
 
+// No looping here, just a single pass through
 void loop()
 {
-  // No looping here, just a single pass through
-  // Wake up
-  writeCredentials({"nothing", "nobody"});
-
   // Read WiFi credentials
   Credentials credentials = readCredentials();
+
   // Connect to wifi or make a server to get wifi credentials
   wifiConnectLoop(credentials);
-  // query conditions
+
+  // Query conditions
   requestURL("example.com");
 
-  // interpret conditions to dial angle
-  // change the dial angles
+  // Interpret conditions to dial angle
+  // Change the dial angles
   moveServos();
 
-  // find the number of ms until next switch (maybe get time from response?)
+  // Find the number of ms until next switch (maybe get time from response?)
   // Hibernate that many ms
   hibernate();
 }
@@ -70,16 +75,17 @@ void connectWifi(Credentials credentials)
 bool testWifi()
 {
   Serial.print("Testing WiFi connection ");
-  for (int i = 0; i < 20; i++)
+  for (int i = 0; i < 30; i++)
   {
     if (WiFi.status() == WL_CONNECTED)
     {
       Serial.println("WiFi connection successful");
       return true;
     }
-    delay(500);
+    delay(1000);
     Serial.print("*");
   }
+  Serial.println();
   Serial.println("Failed to connect to WiFi");
   return false;
 }
@@ -109,11 +115,17 @@ void setupAccessPoint()
   // Handle clients
   while ((WiFi.status() != WL_CONNECTED))
   {
+    // Reset client credentials if 0 button is pushed
+    if (digitalRead(BUTTON_PIN) == 1)
+    {
+      writeCredentials({"", ""});
+    }
+
     Serial.print(".");
-    delay(100);
     server.handleClient();
+    delay(200);
   }
-  delay(1000); // why?
+  delay(1000);
 }
 
 String getSsidOptions()
@@ -146,49 +158,44 @@ void createWebServer(String ssidOptions)
             {
     String ipStr = ipToString(WiFi.softAPIP());
     String content = "<!DOCTYPE html>"
-"<html lang='en'>"
-"  <head>"
-"    <meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-"    <title>Living Poster WiFi Setup</title>"
-"    <style>"
-"      body {"
-"    font - family : -apple - system, 'Roboto', 'Droid Sans', sans - serif;"
-"    -webkit - font - smoothing : antialiased;"
-"    -moz - osx - font - smoothing : grayscale;"
-"    text - align : center;"
-"      }"
-"      h1 {"
-"    font - size : 4em; }"
-"      label {"
-"  display:"
-"    block;"
-"    font - size : 1.5em; }"
-"      select, input, button {"
-"    margin - top : 0.1em;"
-"    font - size : 1.5em; }"
-"      .form-section {"
-"    margin - bottom : 2em; }"
-"    </style>"
-"  </head>"
-"  <body>"
-"    <h1>WiFi Setup</h1>"
-"    <form action='/save-credentials' method='POST'>"
-"      <div class='form-section'>"
-"        <label for='ssid'>Select your WiFi network</label>"
-"        <select id='ssid' name='ssid' required>" +
-      ssidOptions +
-"        </select>"
-"      </div>"
-"      <div class='form-section'>"
-"        <label for='password'>Enter WiFi Password</label>"
-"        <input id='password' name='password' placeholder='p@ssW0rd' required />"
-"      </div>"
-"      <button id='submit' type='submit'>Submit</button>"
-"    </ form>"
-"  </ body>"
-"</ html>";
+                     "<html lang='en'>"
+                     "  <head>"
+                     "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                     "    <title>Living Poster WiFi Setup</title>"
+                     "    <style>"
+                     "      body {"
+                     "        font-family: -apple-system, 'Roboto', 'Droid Sans', sans-serif;"
+                     "        -webkit-font-smoothing: antialiased;"
+                     "        -moz-osx-font-smoothing: grayscale;"
+                     "        text-align: center;"
+                     "        max-width: 800px;"
+                     "        margin: 0 auto;"
+                     "      }"
+                     "      h1 { font-size: 4em; }"
+                     "      label { display: block; font-size: 1.5em; }"
+                     "      select, input, button { margin-top: 0.1em; font-size: 1.5em; padding: 0.25em 0.5em; width: 100%; max-width: 200px }"
+                     "      .form-section { margin-bottom: 2em; }"
+                     "    </style>"
+                     "  </head>"
+                     "  <body>"
+                     "    <h1>WiFi Setup</h1>"
+                     "    <form action='/save-credentials' method='POST'>"
+                     "      <div class='form-section'>"
+                     "        <label for='ssid'>Select your WiFi network</label>"
+                     "        <select id='ssid' name='ssid' required>" +
+                     ssidOptions +
+                     "        </select>"
+                     "      </div>"
+                     "      <div class='form-section'>"
+                     "        <label for='password'>Enter WiFi Password</label>"
+                     "        <input id='password' name='password' placeholder='p@ssW0rd' required />"
+                     "      </div>"
+                     "      <button id='submit' type='submit'>Submit</button>"
+                     "    </ form>"
+                     "  </ body>"
+                     "</ html>";
 
-        server.send(200, "text/html", content); });
+    server.send(200, "text/html", content); });
 
   server.on("/save-credentials", []()
             {
@@ -196,38 +203,43 @@ void createWebServer(String ssidOptions)
     writeCredentials(credentials);
 
     String content = "<!DOCTYPE html>"
-"<html lang='en'>"
-"  <head>"
-"    <meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-"    <title>Living Poster WiFi Setup</title>"
-"    <style>"
-"      body {"
-"        font-family: -apple-system, 'Roboto', 'Droid Sans', sans-serif;"
-"        -webkit-font-smoothing: antialiased;"
-"        -moz-osx-font-smoothing: grayscale;"
-"        text-align: center;"
-"      }"
-"      h1 { font-size: 4em; }"
-"      label { display: block; font-size: 1.5em; }"
-"      select, input, button { margin-top: 0.1em; font-size: 1.5em; }"
-"      .form-section { margin-bottom: 2em; }"
-"    </style>"
-"  </head>"
-"  <body>"
-"    <h1>WiFi Setup</h1>"
-"    <h3>Replace this with SSID?</h3>"
-"    <p>"
-"      Your device will now reboot and should be connected to the WiFi in about 1 minute."
-"      <br>"
-"      If it does not succeed, you can connect to this site again to reset the network and password."
-"      <br>"
-"      You can close this page and connect back to your regular WiFi network."
-"    </p>"
-"  </ body>"
-"</ html>";
+                     "<html lang='en'>"
+                     "  <head>"
+                     "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                     "    <title>Living Poster WiFi Setup</title>"
+                     "    <style>"
+                     "      body {"
+                     "        font-family: -apple-system, 'Roboto', 'Droid Sans', sans-serif;"
+                     "        -webkit-font-smoothing: antialiased;"
+                     "        -moz-osx-font-smoothing: grayscale;"
+                     "        text-align: center;"
+                     "        max-width: 800px;"
+                     "        margin: 0 auto;"
+                     "      }"
+                     "      h1 { font-size: 4em; }"
+                     "      label { display: block; font-size: 1.5em; }"
+                     "      select, input, button { margin-top: 0.1em; font-size: 1.5em; padding: 0.25em 0.5em; width: 100%; max-width: 200px }"
+                     "      .form-section { margin-bottom: 2em; }"
+                     "    </style>"
+                     "  </head>"
+                     "  <body>"
+                     "    <h1>WiFi Setup</h1>"
+                     "    <p>"
+                     "      Your device will now reboot and should be connected to the WiFi in about 1 minute."
+                     "    </p>"
+                     "    <p>"
+                     "      If it does not succeed, you can connect to this site again to reset the network and password."
+                     "    </p>"
+                     "    </p>"
+                     "    <p>"
+                     "      You can close this page and connect back to your regular WiFi network."
+                     "    </p>"
+                     "  </ body>"
+                     "</ html>";
 
-    ESP.restart(); // Really?
-    server.send(201, "text/html", content); });
+    server.send(201, "text/html", content);
+    delay(1000);
+    ESP.restart(); });
 }
 
 String ipToString(IPAddress ipAddress)
@@ -242,12 +254,12 @@ String ipToString(IPAddress ipAddress)
 Credentials readCredentials()
 {
   Serial.println("Reading EEPROM SSID");
-  String ssid = readEEPROM(0, 32);
+  String ssid = readEEPROM(0, EEPROM_SSID_SPACE);
   Serial.println("SSID:");
   Serial.println(ssid);
 
   Serial.println("Reading EEPROM password");
-  String password = readEEPROM(32, 96);
+  String password = readEEPROM(EEPROM_SSID_SPACE, 96);
   Serial.println("PASSWORD:");
   Serial.println(password);
   Credentials credentials = {ssid, password};
@@ -258,12 +270,15 @@ void writeCredentials(Credentials credentials)
 {
 
   clearEEPROM(96);
+
   Serial.println("Writing SSID");
   Serial.println(credentials.ssid);
   writeEEPROM(0, credentials.ssid);
+
   Serial.println("Writing Password");
   Serial.println(credentials.password);
-  writeEEPROM(32, credentials.password);
+  writeEEPROM(EEPROM_SSID_SPACE, credentials.password);
+
   EEPROM.commit();
 }
 
@@ -288,9 +303,9 @@ void clearEEPROM(int length)
 
 void writeEEPROM(int start, String content)
 {
-  for (int i = start; i < start + content.length(); ++i)
+  for (int i = 0; i < content.length(); i++)
   {
-    EEPROM.write(i, content[i]);
+    EEPROM.write(i + start, content[i]);
   }
 }
 
@@ -346,6 +361,14 @@ void requestURL(const char *host)
   {
     String line = client.readStringUntil('\r');
     Serial.print(line);
+  }
+
+  for (int i = 0; i < 3; i++)
+  {
+    digitalWrite(LED_PIN, 1);
+    delay(100);
+    digitalWrite(LED_PIN, 0);
+    delay(100);
   }
 
   Serial.println("Closing connection");
