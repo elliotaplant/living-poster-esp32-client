@@ -116,6 +116,7 @@ void setupAccessPoint()
   while ((WiFi.status() != WL_CONNECTED))
   {
     // Reset client credentials if 0 button is pushed
+    // Maybe this is resetting things?
     if (digitalRead(BUTTON_PIN) == 1)
     {
       writeCredentials({"", ""});
