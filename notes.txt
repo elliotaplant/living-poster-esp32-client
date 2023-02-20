@@ -1,4 +1,5 @@
-- Make request
-- Parse request as JSON
-- Get values from JSON
-- Turn Servos with values
+- [x] Make request
+- [x] Parse request as JSON
+- [x] Get values from JSON
+- [ ] Turn Servos with values
+- [ ] What to do about failed wifi connection?

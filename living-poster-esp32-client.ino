@@ -3,6 +3,9 @@
 #include <HTTPClient.h>
 #include <WebServer.h>
 #include <EEPROM.h>
+#include <ArduinoJson.h>
+
+String BEACH = "blacks";
 
 WebServer server(80);
 const int BUTTON_PIN = 15;
@@ -39,7 +42,10 @@ void loop()
   wifiConnectLoop(credentials);
 
   // Query conditions
-  requestURL(DATA_URL);
+  String conditionsResponseJson = requestURL(DATA_URL);
+
+  // Parse conditions
+  // parseResponse(conditionsResponseJson);
 
   // Interpret conditions to dial angle
   // Change the dial angles
@@ -322,8 +328,10 @@ void hibernate()
 }
 
 // Request -------------------------------------------------
-void requestURL(const char *url)
+String requestURL(const char *url)
 {
+  String response = "";
+
   Serial.println("Connecting to domain: " + String(url));
 
   // Use WiFiClient class to create TCP connections
@@ -351,9 +359,22 @@ void requestURL(const char *url)
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
-          // print server response payload
-          String payload = https.getString();
-          Serial.println(payload);
+          // Parse the response as JSON
+          DynamicJsonDocument doc(2048);
+          DeserializationError error = deserializeJson(doc, https.getStream());
+
+          if (error)
+          {
+            Serial.print(F("deserializeJson() failed: ")); // What the F do?
+            Serial.println(error.f_str());
+            return "";
+          }
+
+          double surfHeight = doc[BEACH]["surfHeight"];
+          double windSpeed = doc[BEACH]["windSpeed"];
+          double waterTemp = doc[BEACH]["waterTemp"];
+          Serial.printf("surfHeight: %f | windSpeed: %f | waterTemp: %f\n",
+                        waterTemp, windSpeed, surfHeight);
         }
       }
       else
@@ -367,6 +388,33 @@ void requestURL(const char *url)
   {
     Serial.printf("[HTTPS] Unable to connect\n");
   }
+
+  return response;
+}
+
+// Parse -------------------------------------------------
+void parseResponse(String jsonResponse)
+{
+  // StaticJsonDocument<N> allocates memory on the stack, it can be
+  // replaced by DynamicJsonDocument which allocates in the heap.
+  //
+  // DynamicJsonDocument doc(200);
+  StaticJsonDocument<200> doc;
+
+  DeserializationError error = deserializeJson(doc, jsonResponse);
+
+  if (error)
+  {
+    Serial.print(F("deserializeJson() failed: ")); // What the F do?
+    Serial.println(error.f_str());
+    return;
+  }
+
+  double surfHeight = doc[BEACH]["surfHeight"];
+  double windSpeed = doc[BEACH]["windSpeed"];
+  double waterTemp = doc[BEACH]["waterTemp"];
+  Serial.printf("surfHeight: %f | windSpeed: %f | waterTemp: %f\n",
+                waterTemp, windSpeed, surfHeight);
 }
 
 // Servos -----------------------------------------------
