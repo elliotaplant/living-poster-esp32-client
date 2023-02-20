@@ -1,14 +1,6 @@
 #include <WebServer.h> // not sure why this has to be here
 #include "declarations.h"
-
-String BEACH = "blacks";
-
-const int BUTTON_PIN = 15;
-const int LED_PIN = 5;
-
-const int EEPROM_SSID_SPACE = 32;
-const int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
-const char *DATA_URL = "https://living-poster.elliotaplant9602.workers.dev";
+#include "config.h"
 
 void setup()
 {
