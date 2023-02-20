@@ -1,7 +1,25 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <EEPROM.h>
-#include <config.h>
+
+// Config
+String BEACH = "blacks";
+
+const int BUTTON_PIN = 15;
+const int LED_PIN = 5;
+
+// Establishing Local server at port 80
+const int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
+const int EEPROM_SSID_SPACE = 32;
+const char *DATA_URL = "https://living-poster.elliotaplant9602.workers.dev";
+
+struct Credentials
+{
+  String ssid;
+  String password;
+};
+
+// End config
 
 void setup()
 {

@@ -1,11 +1,13 @@
 #include <WebServer.h>
 
 // Server to gather WiFi credentials
-void createWebServer(String ssidOptions)
+WebServer *createWebServer(String ssidOptions)
 {
+  WebServer *server = new WebServer(80);
+
   // this is a capture?
-  server.on("/", [ssidOptions]()
-            {
+  server->on("/", [ssidOptions, server]()
+             {
     String content = "<!DOCTYPE html>"
                      "<html lang='en'>"
                      "  <head>"
@@ -44,11 +46,11 @@ void createWebServer(String ssidOptions)
                      "  </ body>"
                      "</ html>";
 
-    server.send(200, "text/html", content); });
+    server->send(200, "text/html", content); });
 
-  server.on("/save-credentials", []()
-            {
-    Credentials credentials = {server.arg("ssid"), server.arg("password")};
+  server->on("/save-credentials", [server]()
+             {
+    Credentials credentials = {server->arg("ssid"), server->arg("password")};
     writeCredentials(credentials);
 
     String content = "<!DOCTYPE html>"
@@ -86,9 +88,10 @@ void createWebServer(String ssidOptions)
                      "  </ body>"
                      "</ html>";
 
-    server.send(201, "text/html", content);
+    server->send(201, "text/html", content);
     delay(1000);
     ESP.restart(); });
+  return server;
 }
 
 String ipToString(IPAddress ipAddress)

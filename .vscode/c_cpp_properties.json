@@ -234,7 +234,8 @@
                 "/Users/elliot/Library/Arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/gcc8_4_0-esp-2021r2-patch5/xtensa-esp32-elf/include"
             ],
             "forcedInclude": [
-                "/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/cores/esp32/Arduino.h"
+                "/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/cores/esp32/Arduino.h",
+                "${workspaceFolder}/living-poster-esp32-client.ino"
             ],
             "cStandard": "c11",
             "cppStandard": "c++11",

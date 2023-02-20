@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <EEPROM.h>
+#include <WebServer.h>
 
 void setupAccessPoint()
 {
@@ -17,15 +18,15 @@ void setupAccessPoint()
   Serial.println(WiFi.softAPIP());
 
   // Start the server
-  createWebServer(ssidOptions);
-  server.begin();
+  WebServer *server = createWebServer(ssidOptions);
+  server->begin();
   Serial.println("Server started");
 
   // Handle clients
   while ((WiFi.status() != WL_CONNECTED))
   {
     Serial.print(".");
-    server.handleClient();
+    server->handleClient();
     delay(200);
   }
   delay(1000);
