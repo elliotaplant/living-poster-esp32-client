@@ -1,5 +1,4 @@
 #include <WiFi.h>
-#include <EEPROM.h>
 #include <WebServer.h>
 
 void setupAccessPoint()

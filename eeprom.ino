@@ -1,4 +1,10 @@
-// EEPROM ----------------------------------------------------
+#include <EEPROM.h>
+
+void eepromSetup()
+{
+  EEPROM.begin(512); // Initializing EEPROM with 512 bytes
+}
+
 Credentials readCredentials()
 {
   Serial.println("Reading EEPROM SSID");

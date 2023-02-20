@@ -1,34 +1,21 @@
-#include <WiFi.h>
-#include <WebServer.h>
-#include <EEPROM.h>
+#include <WebServer.h> // not sure why this has to be here
+#include "declarations.h"
 
-// Config
 String BEACH = "blacks";
 
 const int BUTTON_PIN = 15;
 const int LED_PIN = 5;
 
-// Establishing Local server at port 80
-const int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
 const int EEPROM_SSID_SPACE = 32;
+const int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
 const char *DATA_URL = "https://living-poster.elliotaplant9602.workers.dev";
-
-struct Credentials
-{
-  String ssid;
-  String password;
-};
-
-// End config
 
 void setup()
 {
   // Setup baud rate, pins
   Serial.begin(115200); // Initialize Serial monitor with baud rate
-  EEPROM.begin(512);    // Initializing EEPROM with 512 bytes (can we move to EEPROM.ino?)
-  pinMode(BUTTON_PIN, INPUT);
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW); // LED off
+  eepromSetup();
+  pinsSetup();
 }
 
 // No looping here, just a single pass through

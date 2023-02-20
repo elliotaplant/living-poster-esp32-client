@@ -27,6 +27,7 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
+                "${workspaceFolder}/**",
                 "/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/tools/sdk/esp32/include/newlib/platform_include",
                 "/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/tools/sdk/esp32/include/freertos/include",
                 "/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/tools/sdk/esp32/include/freertos/include/esp_additions/freertos",
@@ -234,8 +235,8 @@
                 "/Users/elliot/Library/Arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/gcc8_4_0-esp-2021r2-patch5/xtensa-esp32-elf/include"
             ],
             "forcedInclude": [
-                "/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/cores/esp32/Arduino.h",
-                "${workspaceFolder}/living-poster-esp32-client.ino"
+                "${workspaceFolder}/living-poster-esp32-client.ino",
+                "/Users/elliot/Library/Arduino15/packages/esp32/hardware/esp32/2.0.6/cores/esp32/Arduino.h"
             ],
             "cStandard": "c11",
             "cppStandard": "c++11",
