@@ -17,6 +17,7 @@ struct Credentials
 // Establishing Local server at port 80
 int NUM_WIFI_ACCESS_POINT_ATTEMPTS = 10;
 int EEPROM_SSID_SPACE = 32;
+const char *DATA_URL = "https://living-poster.elliotaplant9602.workers.dev";
 
 void setup()
 {
@@ -38,7 +39,7 @@ void loop()
   wifiConnectLoop(credentials);
 
   // Query conditions
-  requestURL("living-poster.elliotaplant9602.workers.dev");
+  requestURL(DATA_URL);
 
   // Interpret conditions to dial angle
   // Change the dial angles
@@ -304,7 +305,7 @@ void writeEEPROM(int start, String content)
 }
 
 // Hibernate ---------------------------------------------------
-const uint32_t SLEEP_DURATION = 4 * 1000000; // µs
+const uint32_t SLEEP_DURATION = 10 * 1000000; // µs
 
 void hibernate()
 {
@@ -321,30 +322,32 @@ void hibernate()
 }
 
 // Request -------------------------------------------------
-void requestURL(const char *host)
+void requestURL(const char *url)
 {
-  Serial.println("Connecting to domain: " + String(host));
+  Serial.println("Connecting to domain: " + String(url));
 
   // Use WiFiClient class to create TCP connections
   WiFiClientSecure *client = new WiFiClientSecure;
   if (client)
   {
+    // Not using an SSL cert because there's no secret info
     client->setInsecure();
 
-    // create an HTTPClient instance
+    // Create an HTTPClient instance
     HTTPClient https;
+
     // Initializing an HTTPS communication using the secure client
     Serial.print("[HTTPS] begin...\n");
-    if (https.begin(*client, "https://www.howsmyssl.com/a/check"))
-    { // HTTPS
+    if (https.begin(*client, url))
+    {
       Serial.print("[HTTPS] GET...\n");
-      // start connection and send HTTP header
+      // Start connection and send HTTP header
       int httpCode = https.GET();
       // httpCode will be negative on error
       if (httpCode > 0)
       {
         // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
+        Serial.printf("[HTTPS] Code: %d\n", httpCode);
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
