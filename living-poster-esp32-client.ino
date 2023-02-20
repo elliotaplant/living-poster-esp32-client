@@ -21,16 +21,13 @@ void loop()
   wifiConnectLoop(credentials);
 
   // Query conditions
-  requestConditions(DATA_URL);
-
-  // Parse conditions
-  // parseResponse(conditionsResponseJson);
+  Conditions conditions = requestConditions(DATA_URL);
 
   // Interpret conditions to dial angle
   // Change the dial angles
-  moveServos();
+  moveServos(conditions);
 
   // Find the number of ms until next switch (maybe get time from response?)
   // Hibernate that many ms
-  hibernate();
+  hibernate(conditions.timeMs);
 }

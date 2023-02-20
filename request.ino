@@ -3,11 +3,10 @@
 #include <ArduinoJson.h>
 #include <config.h>
 
-// Request -------------------------------------------------
-void requestConditions(const char *url)
+// Returns the server time that the conditions were sent at
+Conditions requestConditions(const char *url)
 {
-  String response = "";
-
+  Conditions conditions = {0, {0, 0, 0}};
   Serial.println("Connecting to domain: " + String(url));
 
   // Use WiFiClient class to create TCP connections
@@ -43,16 +42,17 @@ void requestConditions(const char *url)
           {
             Serial.print(F("deserializeJson() failed: ")); // What the F do?
             Serial.println(error.f_str());
-            return;
           }
-
-          double time = doc["time"];
-
-          Serial.printf("Time: %f\n", time);
-          for (Dial dial : DIALS)
+          else
           {
-            double value = doc["conditions"][dial.key];
-            Serial.printf("%s: %f\n", dial.key, value);
+
+            double time = doc["time"];
+            conditions.timeMs = time;
+            for (int i = 0; i < 3; i++)
+            {
+              Dial dial = DIALS[i];
+              conditions.values[i] = doc["conditions"][dial.key];
+            }
           }
         }
       }
@@ -67,4 +67,6 @@ void requestConditions(const char *url)
   {
     Serial.printf("[HTTPS] Unable to connect\n");
   }
+
+  return conditions;
 }

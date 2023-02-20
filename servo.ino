@@ -71,7 +71,11 @@
 // 	}
 // }
 
-void moveServos()
+void moveServos(Conditions conditions)
 {
-  Serial.println("Moving servos (or I would be, if I had them)");
+  for (int i = 0; i < 3; i++)
+  {
+    Dial dial = DIALS[i];
+    Serial.printf("Moving dial %s with value %f\n", dial.key, conditions.values[i]);
+  }
 }

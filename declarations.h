@@ -9,6 +9,12 @@ struct Dial
   int pin;
 };
 
+struct Conditions
+{
+  uint64_t timeMs;
+  double values[3];
+};
+
 struct Credentials
 {
   String ssid;
@@ -20,9 +26,9 @@ void eepromSetup();
 Credentials readCredentials();
 void writeCredentials(Credentials);
 void wifiConnectLoop(Credentials);
-void requestConditions(const char *);
-void moveServos();
-void hibernate();
+Conditions requestConditions(const char *);
+void moveServos(Conditions);
+void hibernate(uint64_t serverTimeMs);
 void setupAccessPoint();
 WebServer *createWebServer(String ssidOptions);
 
