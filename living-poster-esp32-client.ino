@@ -37,7 +37,7 @@ void loop()
   wifiConnectLoop(credentials);
 
   // Query conditions
-  requestURL("example.com");
+  requestURL("living-poster.elliotaplant9602.workers.dev");
 
   // Interpret conditions to dial angle
   // Change the dial angles
@@ -150,7 +150,6 @@ void createWebServer(String ssidOptions)
   // this is a capture?
   server.on("/", [ssidOptions]()
             {
-    String ipStr = ipToString(WiFi.softAPIP());
     String content = "<!DOCTYPE html>"
                      "<html lang='en'>"
                      "  <head>"
@@ -327,7 +326,7 @@ void requestURL(const char *host)
 
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  if (!client.connect(host, 80)) // May need to change port to 443?
+  if (!client.connect(host, 443)) // Using port 443 for https
   {
     Serial.println("connection failed");
     return;
@@ -335,13 +334,18 @@ void requestURL(const char *host)
 
   Serial.println("Connected!");
 
+  // Why does this need to have the (String) prefix?
+  String request = (String) "GET / HTTP/1.1\r\n" +
+                   "Host: " + String(host) + "\r\n" +
+                   "Connection: close\r\n\r\n";
+
   // This will send the request to the server
-  client.print((String) "GET / HTTP/1.1\r\n" +
-               "Host: " + String(host) + "\r\n" +
-               "Connection: close\r\n\r\n");
+  client.print(request);
+
   unsigned long timeout = millis();
-  while (client.available() == 0)
+  while (client.available() == 0) // should this be 'false'?
   {
+    // if we don't get a response in 5s, timeout
     if (millis() - timeout > 5000)
     {
       Serial.println(">>> Client Timeout !");
