@@ -4,7 +4,7 @@
 // Change this for each poster
 const char *DATA_URL = "https://living-poster.elliotaplant9602.workers.dev/?beach=blacks";
 
-int SERVO_PWN_FREQUENCY = 50;
+int SERVO_PWM_FREQUENCY = 50;
 float SERVO_DUTY_CYCLE_LOW = 2.5;
 float SERVO_DUTY_CYCLE_HIGH = 12.5;
 Dial DIALS[3] = {

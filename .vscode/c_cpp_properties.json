@@ -232,7 +232,8 @@
                 "/Users/elliot/Library/Arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/gcc8_4_0-esp-2021r2-patch5/lib/gcc/xtensa-esp32-elf/8.4.0/include",
                 "/Users/elliot/Library/Arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/gcc8_4_0-esp-2021r2-patch5/lib/gcc/xtensa-esp32-elf/8.4.0/include-fixed",
                 "/Users/elliot/Library/Arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/gcc8_4_0-esp-2021r2-patch5/xtensa-esp32-elf/sys-include",
-                "/Users/elliot/Library/Arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/gcc8_4_0-esp-2021r2-patch5/xtensa-esp32-elf/include"
+                "/Users/elliot/Library/Arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/gcc8_4_0-esp-2021r2-patch5/xtensa-esp32-elf/include",
+                "/Users/elliot/Documents/Arduino/libraries/ESP32Servo/src"
             ],
             "forcedInclude": [
                 "${workspaceFolder}/living-poster-esp32-client.ino",
