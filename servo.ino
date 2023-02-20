@@ -70,3 +70,8 @@
 // 		delay(15);             // waits 15ms for the servo to reach the position
 // 	}
 // }
+
+void moveServos()
+{
+  Serial.println("Moving servos (or I would be, if I had them)");
+}
