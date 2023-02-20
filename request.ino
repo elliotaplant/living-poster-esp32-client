@@ -1,6 +1,7 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <config.h>
 
 // Request -------------------------------------------------
 String requestURL(const char *url)
