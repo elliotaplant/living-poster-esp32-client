@@ -1,4 +1,5 @@
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <WebServer.h>
 #include <EEPROM.h>
@@ -325,52 +326,44 @@ void requestURL(const char *host)
   Serial.println("Connecting to domain: " + String(host));
 
   // Use WiFiClient class to create TCP connections
-  WiFiClient client;
-  if (!client.connect(host, 443)) // Using port 443 for https
+  WiFiClientSecure *client = new WiFiClientSecure;
+  if (client)
   {
-    Serial.println("connection failed");
-    return;
-  }
+    client->setInsecure();
 
-  Serial.println("Connected!");
-
-  // Why does this need to have the (String) prefix?
-  String request = (String) "GET / HTTP/1.1\r\n" +
-                   "Host: " + String(host) + "\r\n" +
-                   "Connection: close\r\n\r\n";
-
-  // This will send the request to the server
-  client.print(request);
-
-  unsigned long timeout = millis();
-  while (client.available() == 0) // should this be 'false'?
-  {
-    // if we don't get a response in 5s, timeout
-    if (millis() - timeout > 5000)
-    {
-      Serial.println(">>> Client Timeout !");
-      client.stop();
-      return;
+    // create an HTTPClient instance
+    HTTPClient https;
+    // Initializing an HTTPS communication using the secure client
+    Serial.print("[HTTPS] begin...\n");
+    if (https.begin(*client, "https://www.howsmyssl.com/a/check"))
+    { // HTTPS
+      Serial.print("[HTTPS] GET...\n");
+      // start connection and send HTTP header
+      int httpCode = https.GET();
+      // httpCode will be negative on error
+      if (httpCode > 0)
+      {
+        // HTTP header has been send and Server response header has been handled
+        Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
+        // file found at server
+        if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
+        {
+          // print server response payload
+          String payload = https.getString();
+          Serial.println(payload);
+        }
+      }
+      else
+      {
+        Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+      }
+      https.end();
     }
   }
-
-  // Read all the lines of the reply from server and print them to Serial
-  while (client.available())
+  else
   {
-    String line = client.readStringUntil('\r');
-    Serial.print(line);
+    Serial.printf("[HTTPS] Unable to connect\n");
   }
-
-  for (int i = 0; i < 3; i++)
-  {
-    digitalWrite(LED_PIN, 1);
-    delay(100);
-    digitalWrite(LED_PIN, 0);
-    delay(100);
-  }
-
-  Serial.println("Closing connection");
-  client.stop();
 }
 
 // Servos -----------------------------------------------
