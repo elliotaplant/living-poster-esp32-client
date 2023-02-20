@@ -1,6 +1,14 @@
 #ifndef Declarations_h
 #define Declarations_h
 
+struct Dial
+{
+  String key;
+  int rangeLow;
+  int rangeHigh;
+  int pin;
+};
+
 struct Credentials
 {
   String ssid;
@@ -12,7 +20,7 @@ void eepromSetup();
 Credentials readCredentials();
 void writeCredentials(Credentials);
 void wifiConnectLoop(Credentials);
-String requestURL(const char *);
+void requestConditions(const char *);
 void moveServos();
 void hibernate();
 void setupAccessPoint();

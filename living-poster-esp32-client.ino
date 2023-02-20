@@ -1,5 +1,6 @@
 #include <WebServer.h> // not sure why this has to be here
 #include "declarations.h"
+#include "constants.h"
 #include "config.h"
 
 void setup()
@@ -20,7 +21,7 @@ void loop()
   wifiConnectLoop(credentials);
 
   // Query conditions
-  String conditionsResponseJson = requestURL(DATA_URL);
+  requestConditions(DATA_URL);
 
   // Parse conditions
   // parseResponse(conditionsResponseJson);

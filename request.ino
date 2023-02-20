@@ -4,7 +4,7 @@
 #include <config.h>
 
 // Request -------------------------------------------------
-String requestURL(const char *url)
+void requestConditions(const char *url)
 {
   String response = "";
 
@@ -43,14 +43,17 @@ String requestURL(const char *url)
           {
             Serial.print(F("deserializeJson() failed: ")); // What the F do?
             Serial.println(error.f_str());
-            return "";
+            return;
           }
 
-          double surfHeight = doc[BEACH]["surfHeight"];
-          double windSpeed = doc[BEACH]["windSpeed"];
-          double waterTemp = doc[BEACH]["waterTemp"];
-          Serial.printf("surfHeight: %f | windSpeed: %f | waterTemp: %f\n",
-                        waterTemp, windSpeed, surfHeight);
+          double time = doc["time"];
+
+          Serial.printf("Time: %f\n", time);
+          for (Dial dial : DIALS)
+          {
+            double value = doc["conditions"][dial.key];
+            Serial.printf("%s: %f\n", dial.key, value);
+          }
         }
       }
       else
@@ -64,6 +67,4 @@ String requestURL(const char *url)
   {
     Serial.printf("[HTTPS] Unable to connect\n");
   }
-
-  return response;
 }
