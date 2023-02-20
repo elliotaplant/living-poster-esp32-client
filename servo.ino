@@ -41,7 +41,6 @@
 Servo firstServo; // create servo object to control a servo
 // 16 servo objects can be created on the ESP32
 
-int pos = 0; // variable to store the servo position
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
 int servoPin = 13;
 
@@ -52,17 +51,18 @@ void servoSetup()
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
-  firstServo.setPeriodHertz(SERVO_PWM_FREQUENCY); // standard 50 hz servo
-  firstServo.attach(servoPin, 500, 2500);         // attaches the servo on servoPin to the servo object
-                                                  // Using guessed values for the duty cycle microseconds?
+  firstServo.setPeriodHertz(SERVO_PWM_FREQUENCY);
+  firstServo.attach(servoPin,
+                    SERVO_DUTY_CYCLE_LOW,
+                    SERVO_DUTY_CYCLE_HIGH);
 }
 
 void writeServoPosition(int degrees)
 {
 
   Serial.printf("Moving to %d degrees\n", degrees);
-  firstServo.write(pos); // tell servo to go to position in variable 'pos'
-  delay(200);            // waits 15ms for the servo to reach the position
+  firstServo.write(degrees); // tell servo to go to position in variable 'pos'
+  delay(200);                // waits 15ms for the servo to reach the position
 }
 
 void moveServos(Conditions conditions)
@@ -70,12 +70,14 @@ void moveServos(Conditions conditions)
   for (int i = 0; i < 3; i++)
   {
     Dial dial = DIALS[i];
-    int value = conditions.values[i];
-    int degrees = (180 - 0) * ((value - dial.rangeLow) / (dial.rangeHigh - dial.rangeLow));
+    double value = conditions.values[i];
+    double pct = (value - dial.rangeLow) / (dial.rangeHigh - dial.rangeLow);
+    double degrees = (180 - 0) * pct;
     Serial.printf(
-        "Moving dial %s with value %f to degrees %d\n",
+        "Moving dial %s with value %f (pct %f) to degrees %f\n",
         dial.key,
         conditions.values[i],
+        pct,
         degrees);
     writeServoPosition(degrees);
   }

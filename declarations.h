@@ -4,8 +4,8 @@
 struct Dial
 {
   String key;
-  int rangeLow;
-  int rangeHigh;
+  double rangeLow;
+  double rangeHigh;
   int pin;
 };
 

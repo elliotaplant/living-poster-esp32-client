@@ -1,5 +1,6 @@
 // Hibernate ---------------------------------------------------
-const int HOUR_IN_MS = 60 * 60 * 1000; // ms
+// const int HOUR_IN_MS = 60 * 60 * 1000; // ms
+const int HOUR_IN_MS = 10 * 1000; // fake 10s hour
 
 void hibernate(uint64_t serverTimeMs)
 {
