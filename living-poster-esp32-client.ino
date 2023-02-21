@@ -22,7 +22,11 @@ void loop()
     // Woke up not from sleep, resetting servos
     resetServos();
 
-    // TODO: Turn on access point
+    // Try to connect to WiFi. If it fails, setup an access point to read credentials
+    Credentials credentials = readCredentials();
+    tryWifiOrSetupAccessPoint(credentials);
+
+    // After successful WiFI or credential read, hibernate
     hibernateMs(5000);
   }
   else
@@ -31,16 +35,29 @@ void loop()
     Credentials credentials = readCredentials();
 
     // Connect to wifi or make a server to get wifi credentials
-    wifiConnectLoop(credentials);
+    bool connectSuccess = connectAndTestWifi(credentials);
 
-    // Query conditions
-    Conditions conditions = requestConditions(DATA_URL);
+    if (connectSuccess)
+    {
 
-    // Interpret conditions to dial angle
-    // Change the dial angles
-    moveServos(conditions);
+      // Query conditions
+      Conditions conditions = requestConditions(DATA_URL);
 
-    // Hibernate that many ms
-    hibernateUntilNextHour(conditions.timeMs);
+      // TODO: Check to see if conditions match previous conditions and don't move the servos
+
+      // Change the dial angles and interpret conditions to dial angle
+      moveServos(conditions);
+
+      // Blink to show success
+      blink();
+
+      // Hibernate that many ms
+      hibernateUntilNextHour(conditions.timeMs);
+    }
+    else
+    {
+      // Query failed, sleep for 1hr
+      hibernateMs(60 * 60 * 1000);
+    }
   }
 }

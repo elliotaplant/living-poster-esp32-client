@@ -1,16 +1,24 @@
 #include <WiFi.h>
 
 // Uses credentials to connect to WiFi or creates a server to get those credentials
-void wifiConnectLoop(Credentials credentials)
+bool connectAndTestWifi(Credentials credentials)
 {
-  for (int i = 0; i < NUM_WIFI_ACCESS_POINT_ATTEMPTS; i++)
-  {
-    // Attempt to connect to wifi
-    connectWifi(credentials);
+  // Attempt to connect to wifi
+  connectWifi(credentials);
 
-    // If successful, exit
-    if (testWifi())
-      return;
+  // If successful, exit
+  return testWifi();
+}
+
+// Uses credentials to connect to WiFi or creates a server to get those credentials
+void tryWifiOrSetupAccessPoint(Credentials credentials)
+{
+  // Attempt to connect to wifi
+  connectWifi(credentials);
+
+  // If successful, exit
+  if (!testWifi())
+  {
 
     // If unsuccessful, create the configuration server
     setupAccessPoint();

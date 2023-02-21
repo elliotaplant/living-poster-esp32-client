@@ -22,12 +22,14 @@ struct Credentials
 };
 
 esp_sleep_wakeup_cause_t wakeup();
+void blink();
 void servoSetup();
 void pinsSetup();
 void eepromSetup();
 Credentials readCredentials();
 void writeCredentials(Credentials);
-void wifiConnectLoop(Credentials);
+bool connectAndTestWifi(Credentials);
+void tryWifiOrSetupAccessPoint(Credentials);
 Conditions requestConditions(const char *);
 void moveServos(Conditions);
 void resetServos();
