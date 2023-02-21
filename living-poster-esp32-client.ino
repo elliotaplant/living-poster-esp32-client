@@ -15,20 +15,32 @@ void setup()
 // No looping here, just a single pass through
 void loop()
 {
-  // Read WiFi credentials
-  Credentials credentials = readCredentials();
+  // Eventually, handle wifi config with this method
+  esp_sleep_wakeup_cause_t wakeupCause = wakeup();
+  if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED)
+  {
+    // Woke up not from sleep, resetting servos
+    resetServos();
 
-  // Connect to wifi or make a server to get wifi credentials
-  wifiConnectLoop(credentials);
+    // TODO: Turn on access point
+    hibernateMs(5000);
+  }
+  else
+  {
+    // Read WiFi credentials
+    Credentials credentials = readCredentials();
 
-  // Query conditions
-  Conditions conditions = requestConditions(DATA_URL);
+    // Connect to wifi or make a server to get wifi credentials
+    wifiConnectLoop(credentials);
 
-  // Interpret conditions to dial angle
-  // Change the dial angles
-  moveServos(conditions);
+    // Query conditions
+    Conditions conditions = requestConditions(DATA_URL);
 
-  // Find the number of ms until next switch (maybe get time from response?)
-  // Hibernate that many ms
-  hibernate(conditions.timeMs);
+    // Interpret conditions to dial angle
+    // Change the dial angles
+    moveServos(conditions);
+
+    // Hibernate that many ms
+    hibernateUntilNextHour(conditions.timeMs);
+  }
 }

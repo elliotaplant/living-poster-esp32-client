@@ -48,7 +48,7 @@ Conditions requestConditions(const char *url)
 
             double time = doc["time"];
             conditions.timeMs = time;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < NUM_DIALS; i++)
             {
               Dial dial = DIALS[i];
               conditions.values[i] = doc["conditions"][dial.key];

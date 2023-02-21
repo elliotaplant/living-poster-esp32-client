@@ -38,12 +38,10 @@
 
 #include <ESP32Servo.h>
 
-Servo firstServo; // create servo object to control a servo
+Servo servos[NUM_DIALS]; // create servo object to control a servo
 // 16 servo objects can be created on the ESP32
 
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
-int servoPin = 13;
-
 void servoSetup()
 {
   // Allow allocation of all timers
@@ -51,34 +49,39 @@ void servoSetup()
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
-  firstServo.setPeriodHertz(SERVO_PWM_FREQUENCY);
-  firstServo.attach(servoPin,
-                    SERVO_DUTY_CYCLE_LOW,
-                    SERVO_DUTY_CYCLE_HIGH);
-}
-
-void writeServoPosition(int degrees)
-{
-
-  Serial.printf("Moving to %d degrees\n", degrees);
-  firstServo.write(degrees); // tell servo to go to position in variable 'pos'
-  delay(200);                // waits 15ms for the servo to reach the position
+  for (int i = 0; i < NUM_DIALS; i++)
+  {
+    servos[i].setPeriodHertz(SERVO_PWM_FREQUENCY);
+    servos[i].attach(DIALS[i].pin, SERVO_DUTY_CYCLE_LOW, SERVO_DUTY_CYCLE_HIGH);
+  }
 }
 
 void moveServos(Conditions conditions)
 {
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < NUM_DIALS; i++)
   {
     Dial dial = DIALS[i];
     double value = conditions.values[i];
     double pct = (value - dial.rangeLow) / (dial.rangeHigh - dial.rangeLow);
-    double degrees = (180 - 0) * pct;
+    double degrees = 180 * (1 - pct); // Negative because the rotation is reversed
     Serial.printf(
         "Moving dial %s with value %f (pct %f) to degrees %f\n",
         dial.key,
         conditions.values[i],
         pct,
         degrees);
-    writeServoPosition(degrees);
+
+    servos[i].write(degrees); // tell servo to go to position in variable 'pos'
+    delay(200);               // waits 200ms for the servo to reach the position
+  }
+}
+
+void resetServos()
+{
+  for (int i = 0; i < NUM_DIALS; i++)
+  {
+    Dial dial = DIALS[i];
+    servos[i].write(180);
+    delay(200);
   }
 }
