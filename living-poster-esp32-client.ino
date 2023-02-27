@@ -41,7 +41,7 @@ void loop()
     {
 
       // Query conditions
-      Conditions conditions = requestConditions(DATA_URL);
+      Conditions conditions = requestConditions(DATA_URL, BEACH, POSTER_ID, millis());
 
       // TODO: Check to see if conditions match previous conditions and don't move the servos
 

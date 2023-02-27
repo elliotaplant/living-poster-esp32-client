@@ -4,7 +4,7 @@
 #include <config.h>
 
 // Returns the server time that the conditions were sent at
-Conditions requestConditions(String dataUrl, String beach, String posterId, int millisTaken)
+Conditions requestConditions(String dataUrl, String beach, String posterId, unsigned long millisTaken)
 {
   Conditions conditions = {0, {0, 0, 0}};
 
