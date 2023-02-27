@@ -1,0 +1,36 @@
+- [x] Make request
+- [x] Parse request as JSON
+- [x] Get values from JSON
+- [x] Separate files?
+- [x] Turn Servos with values
+- [x] What to do about failed wifi connection?
+- [ ] What happened to the battery and/or the controller?
+  - When I plugged in the battery backwards, smoke came out
+    - But both the battery and the controller _seemed_ to work
+    - I was able to reset the controller and see the dials move after removing the plug
+  - The battery now appears to have no charge at all
+  - I'm not sure if the microcontroller is cursed too
+- [ ] How much charge can I really get from the battery?
+  - wakeCurrentDraw = 150mA expected, 250mA max
+  - wakeTime = expected 20s, but need to measure with serial and telemetry
+  - servoCurrentDraw = 540mA min, 1650mA max (but probably on the lowest end? Should measure)
+  - servoTime = assume 2s, but will need to enforce this with gpio and the transistor
+  - sleepingCurrent draw = 2uA (will need to remove the LED, otherwise 2mA)
+  - sleepTime = 3600s
+  - Formula: `(wakeCurrentDraw * wakeTime) + (servoCurrentDraw * servoTime) + (sleepingCurrentDraw * sleepTime)`
+  - Current case (no servos, including power LED): `(250mA * 40s) (2.4mA * 3600s) = 18,640mAs = 83.2 mAh -> 12.2 h runtime for 1k mAh battery -> 0.5 days (why isn't battery dead yet?)`
+  - Worst case: `(250mA * 40s) + (1650mA * 40s) + (2mA * 3600s) = 83,200mAs = 23.1 mAh -> 43.3 h runtime for 1k mAh battery -> 1.8 days :(`
+  - Best case: `(150mA * 10s) + (540mA * 2s) + (0.002mA * 3600s) = 2,587mAs = 0.71 mAh -> 1,408 h runtime for 1k mAh battery -> 59 days :(`
+  - Even better case: `(90mA * 5s) + (540mA * 2s) + (0.002mA * 3600s) = 1,537mAs = 0.43 mAh -> 2,326 h runtime for 1k mAh battery -> 194 days (if you don't run at night) :|`
+    - `(450mAs) + (1080mAs) + (7.2mAs)
+  - Dreamy case: `(90mA * 5s) + (540mA * 0.5s) + (0.002mA * 3600s) = 792mAs = 0.22 mAh -> 4,545 h runtime for 1k mAh battery -> 379 days (if you don't run at night) :)`
+  - Memory case (if conditions don't change frequently): `(90mA * 5s) + (540mA * 0.5s)/2 + (0.010ma * 3600s) = 621mAs = 0.17 mAh -> 5,882 h runtime for 1k mAh battery -> 490 days (if you don't run at night and conditions are the same 50% of the time) :)`
+  - Need to confirm:
+    - How long does the whole process _really_ take?
+      - Can we get it down to 5s??
+    - How much current does the esp draw during runtime?
+      - Is it near 150mA? 90mA?
+    - How much current do the motors really draw when moving?
+      - Is it close to 540mA? Maybe less because of the lower voltage?
+    - How much current does hibernation really draw?
+      - We expect 2uA, but we'll need to remove the power LED to know for sure

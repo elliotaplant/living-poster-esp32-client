@@ -1,6 +1,0 @@
-- [x] Make request
-- [x] Parse request as JSON
-- [x] Get values from JSON
-- [ ] Separate files?
-- [ ] Turn Servos with values
-- [ ] What to do about failed wifi connection?
