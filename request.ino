@@ -4,10 +4,12 @@
 #include <config.h>
 
 // Returns the server time that the conditions were sent at
-Conditions requestConditions(const char *url)
+Conditions requestConditions(String dataUrl, String beach, String posterId, int millisTaken)
 {
   Conditions conditions = {0, {0, 0, 0}};
-  Serial.println("Connecting to domain: " + String(url));
+
+  String combinedUrl = dataUrl + "?beach=" + beach + "&poster_id=" + posterId + "&millis_taken=" + millisTaken;
+  Serial.printf("Connecting to domain: %s\n", combinedUrl);
 
   // Use WiFiClient class to create TCP connections
   WiFiClientSecure *client = new WiFiClientSecure;
@@ -21,7 +23,7 @@ Conditions requestConditions(const char *url)
 
     // Initializing an HTTPS communication using the secure client
     Serial.print("[HTTPS] begin...\n");
-    if (https.begin(*client, url))
+    if (https.begin(*client, combinedUrl.c_str()))
     {
       Serial.print("[HTTPS] GET...\n");
       // Start connection and send HTTP header
