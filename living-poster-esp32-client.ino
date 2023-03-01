@@ -52,7 +52,7 @@ void loop()
       blink();
 
       // Hibernate that many ms
-      hibernateUntilNextHour(conditions.timeMs);
+      hibernateUntilNextCycle(conditions.timeMs);
     }
     else
     {

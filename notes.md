@@ -18,7 +18,7 @@
   - sleepingCurrent draw = 2uA (will need to remove the LED, otherwise 2mA)
   - sleepTime = 3600s
   - Formula: `(wakeCurrentDraw * wakeTime) + (servoCurrentDraw * servoTime) + (sleepingCurrentDraw * sleepTime)`
-  - Current case (no servos, including power LED): `(250mA * 40s) (2.4mA * 3600s) = 18,640mAs = 83.2 mAh -> 12.2 h runtime for 1k mAh battery -> 0.5 days (why isn't battery dead yet?)`
+  - Current case (no servos, including power LED): `(250mA * 40s) (2.4mA * 3600s) = 18,640mAs = 5.2 mAh -> 192 h runtime for 1k mAh battery -> 8 days (why isn't battery dead yet?)`
   - Worst case: `(250mA * 40s) + (1650mA * 40s) + (2mA * 3600s) = 83,200mAs = 23.1 mAh -> 43.3 h runtime for 1k mAh battery -> 1.8 days :(`
   - Best case: `(150mA * 10s) + (540mA * 2s) + (0.002mA * 3600s) = 2,587mAs = 0.71 mAh -> 1,408 h runtime for 1k mAh battery -> 59 days :(`
   - Even better case: `(90mA * 5s) + (540mA * 2s) + (0.002mA * 3600s) = 1,537mAs = 0.43 mAh -> 2,326 h runtime for 1k mAh battery -> 194 days (if you don't run at night) :|`
@@ -34,3 +34,32 @@
       - Is it close to 540mA? Maybe less because of the lower voltage?
     - How much current does hibernation really draw?
       - We expect 2uA, but we'll need to remove the power LED to know for sure
+- [ ] Why isn't the cycle running on the hour?
+  - It seems that the cycle timer isn't very accurate
+    - Sometimes we undershoot and run at X:59, and sometimes we overshoot and somehow skip an hour
+  - What we should do is clamp the cycle time at 1hr +/- 10 minutes
+  - OR, calculate three possible hour times, and pick the one closest to 60 minutes
+  - OR, if the cycle time is < 20% of a cycle, add another full cycle
+- [ ] How can we really test the battery life with/without servos?
+  - [ ] Get a site where we can see the telemetry
+    - Make a chart to see the number of pings/hour
+  - [ ] Reliably query results every 10 mins
+  - [ ] Add a pin that measures voltage between two large, equal resistors
+    - Also chart that value over time
+  - [ ] The current output for JUST the esp should be this:
+    - (no servos, including power LED): 
+      - With 10 min cycles:
+        - batteryContents = 1000 mAh = (espRunningConsumptionPerCycle + espRestingConsumptionPerCycleWithLED) * totalNumCycles
+        - batteryContents = 1000 mAh = (100mA * 30s + 2mA * 600s) * totalNumCycles
+        - 1000 mAh = (3000 mAs + 1200 mAs) * totalNumCycles
+        - 857 = totalNumberCycles = 8,570 minutes = 143 hours ~= 6 days 
+      - With 5 min cycles:
+        - batteryContents = 1000 mAh = (100mA * 30s + 2mA * 300s) * totalNumCycles
+        - 1000 mAh = (3000 mAs + 600 mAs) * totalNumCycles
+        - 1000 = totalNumberCycles = 5000 minutes = 83 hours ~= 3.5 days 
+      - With 2 min cycles:
+        - batteryContents = 1000 mAh = (100mA * 30s + 2mA * 120s) * totalNumCycles
+        - 1000 mAh = (3000 mAs + 240 mAs) * totalNumCycles
+        - 1111 = totalNumberCycles = 2222 minutes = 37 hours ~= 1.5 days 
+    - (no servos, remove power LED): 
+      - batteryContents = 1000 mAh = (espRunningConsumptionPerCycle + espRestingConsumptionPerCycleNoLED) * totalNumCycles

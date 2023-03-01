@@ -1,14 +1,21 @@
 // Hibernate ---------------------------------------------------
-const int HOUR_IN_MS = 60 * 60 * 1000; // ms
-// const int HOUR_IN_MS = 60 * 1000; // fake 10s hour
 
-void hibernateUntilNextHour(uint64_t serverTimeMs)
+void hibernateUntilNextCycle(uint64_t serverTimeMs)
 {
-  uint64_t msLeftInHour = HOUR_IN_MS - (serverTimeMs % HOUR_IN_MS);
-  uint64_t usLeftInHour = msLeftInHour * 1000;
+  uint64_t msLeftInCycle = CYCLE_TIME_MS - (serverTimeMs % CYCLE_TIME_MS);
 
-  Serial.printf("Hibernating for %d seconds\n", msLeftInHour / 1000);
-  hibernateMs(msLeftInHour);
+  // If <20% of the cycle time is left, skip this cycle and go to the next one
+  float fractionRemaining = (float)msLeftInCycle / (float)CYCLE_TIME_MS;
+  if (fractionRemaining < 0.2)
+  {
+    msLeftInCycle += CYCLE_TIME_MS;
+  }
+
+  uint64_t usLeftInCycle = msLeftInCycle * 1000;
+
+  Serial.printf("Total time: %dms\n", millis());
+  Serial.printf("Hibernating for %d seconds\n", msLeftInCycle / 1000);
+  hibernateMs(msLeftInCycle);
 }
 
 void hibernateMs(uint64_t millisToSleep)

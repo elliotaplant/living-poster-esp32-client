@@ -33,7 +33,7 @@ void tryWifiOrSetupAccessPoint(Credentials);
 Conditions requestConditions(const char *);
 void moveServos(Conditions);
 void resetServos();
-void hibernateUntilNextHour(uint64_t serverTimeMs);
+void hibernateUntilNextCycle(uint64_t serverTimeMs);
 void hibernateMs(uint64_t millisToSleep);
 void setupAccessPoint();
 WebServer *createWebServer(String ssidOptions);

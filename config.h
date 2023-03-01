@@ -6,6 +6,7 @@ const String DATA_URL = "https://living-poster.elliotaplant9602.workers.dev/";
 const String BEACH = "blacks";
 const String POSTER_ID = "1";
 
+const int CYCLE_TIME_MS = 2 * 60 * 1000; // 2 mins
 const int SERVO_PWM_FREQUENCY = 50;
 const int SERVO_DUTY_CYCLE_LOW = 600;
 const int SERVO_DUTY_CYCLE_HIGH = 2500;

@@ -4,11 +4,11 @@
 #include <config.h>
 
 // Returns the server time that the conditions were sent at
-Conditions requestConditions(String dataUrl, String beach, String posterId, unsigned long millisTaken)
+Conditions requestConditions(String dataUrl, String beach, String posterId, unsigned long millis)
 {
   Conditions conditions = {0, {0, 0, 0}};
 
-  String combinedUrl = dataUrl + "?beach=" + beach + "&poster_id=" + posterId + "&millis_taken=" + millisTaken;
+  String combinedUrl = dataUrl + "?beach=" + beach + "&poster_id=" + posterId + "&millis=" + millis;
   Serial.printf("Connecting to domain: %s\n", combinedUrl);
 
   // Use WiFiClient class to create TCP connections
