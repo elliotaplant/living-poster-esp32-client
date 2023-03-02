@@ -22,10 +22,20 @@ void setupAccessPoint()
   Serial.println("Server started");
 
   // Handle clients
+  bool ledState = false;
   while ((WiFi.status() != WL_CONNECTED))
   {
     Serial.print(".");
     server->handleClient();
+    if (ledState)
+    {
+      digitalWrite(LED_PIN, HIGH); // LED on
+    }
+    else
+    {
+      digitalWrite(LED_PIN, LOW); // LED on
+    }
+    ledState = !ledState;
     delay(200);
   }
   delay(1000);
