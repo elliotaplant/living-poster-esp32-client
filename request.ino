@@ -4,12 +4,26 @@
 #include <config.h>
 
 // Returns the server time that the conditions were sent at
-Conditions requestConditions(String dataUrl, String beach, String posterId, unsigned long millis)
+Conditions requestConditions(
+    String dataUrl,
+    String beach,
+    String posterId,
+    String batteryVoltage)
 {
   Conditions conditions = {0, {0, 0, 0}};
 
-  String combinedUrl = dataUrl + "?beach=" + beach + "&poster_id=" + posterId + "&millis=" + millis;
-  Serial.printf("Connecting to domain: %s\n", combinedUrl);
+  String combinedUrl = dataUrl;
+  combinedUrl += String("?beach=");
+  combinedUrl += beach;
+  combinedUrl += String("&poster_id=");
+  combinedUrl += posterId;
+  combinedUrl += String("&millis=");
+  combinedUrl += String(millis());
+  combinedUrl += String("&battery=");
+  combinedUrl += String(batteryVoltage);
+
+  Serial.println("Connecting to domain:");
+  Serial.println(combinedUrl);
 
   // Use WiFiClient class to create TCP connections
   WiFiClientSecure *client = new WiFiClientSecure;
@@ -22,10 +36,10 @@ Conditions requestConditions(String dataUrl, String beach, String posterId, unsi
     HTTPClient https;
 
     // Initializing an HTTPS communication using the secure client
-    Serial.print("[HTTPS] begin...\n");
+    Serial.println("[HTTPS] begin...");
     if (https.begin(*client, combinedUrl.c_str()))
     {
-      Serial.print("[HTTPS] GET...\n");
+      Serial.println("[HTTPS] GET...");
       // Start connection and send HTTP header
       int httpCode = https.GET();
       // httpCode will be negative on error

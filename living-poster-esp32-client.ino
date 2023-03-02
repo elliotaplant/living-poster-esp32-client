@@ -15,6 +15,9 @@ void setup()
 // No looping here, just a single pass through
 void loop()
 {
+  // Not sure why I need to read this here
+  String batteryVoltage = String(analogRead(BATTERY_VOLTAGE_PIN));
+
   // Eventually, handle wifi config with this method
   esp_sleep_wakeup_cause_t wakeupCause = wakeup();
   if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED)
@@ -41,7 +44,7 @@ void loop()
     {
 
       // Query conditions
-      Conditions conditions = requestConditions(DATA_URL, BEACH, POSTER_ID, millis());
+      Conditions conditions = requestConditions(DATA_URL, BEACH, POSTER_ID, batteryVoltage);
 
       // TODO: Check to see if conditions match previous conditions and don't move the servos
 
@@ -57,7 +60,7 @@ void loop()
     else
     {
       // Query failed, sleep for 1hr
-      hibernateMs(60 * 60 * 1000);
+      hibernateMs(CYCLE_TIME_MS);
     }
   }
 }

@@ -30,7 +30,7 @@ Credentials readCredentials();
 void writeCredentials(Credentials);
 bool connectAndTestWifi(Credentials);
 void tryWifiOrSetupAccessPoint(Credentials);
-Conditions requestConditions(const char *);
+Conditions requestConditions(String, String, String, String);
 void moveServos(Conditions);
 void resetServos();
 void hibernateUntilNextCycle(uint64_t serverTimeMs);

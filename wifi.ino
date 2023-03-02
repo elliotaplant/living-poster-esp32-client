@@ -37,6 +37,7 @@ bool testWifi()
   {
     if (WiFi.status() == WL_CONNECTED)
     {
+      Serial.println();
       Serial.println("WiFi connection successful");
       return true;
     }
