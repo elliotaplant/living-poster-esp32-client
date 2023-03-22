@@ -23,7 +23,7 @@ struct Credentials
 
 esp_sleep_wakeup_cause_t wakeup();
 void blink();
-void servoSetup();
+void startServos();
 void pinsSetup();
 void eepromSetup();
 Credentials readCredentials();

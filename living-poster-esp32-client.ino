@@ -9,7 +9,6 @@ void setup()
   Serial.begin(115200); // Initialize Serial monitor with baud rate
   eepromSetup();
   pinsSetup();
-  servoSetup();
 }
 
 // No looping here, just a single pass through
