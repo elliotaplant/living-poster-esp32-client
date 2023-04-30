@@ -1,37 +1,25 @@
-#include <WebServer.h> // not sure why this has to be here
+#include <WebServer.h>  // not sure why this has to be here
 #include "declarations.h"
 #include "constants.h"
 #include "config.h"
 
-void setup()
-{
+void setup() {
   // Setup baud rate, pins
-  Serial.begin(115200); // Initialize Serial monitor with baud rate
+  Serial.begin(115200);  // Initialize Serial monitor with baud rate
   eepromSetup();
   setupServos();
   pinsSetup();
 }
 
 // No looping here, just a single pass through
-void loop()
-{
-
-  while (true)
-  {
-    for (int i = 0; i <= 180; i += 10)
-    {
-      moveServosToDeg(i);
-      delay(500);
-    }
-  }
+void loop() {
 
   // Not sure why I need to read this here
   String batteryVoltage = String(analogRead(BATTERY_VOLTAGE_PIN));
 
   // Eventually, handle wifi config with this method
   esp_sleep_wakeup_cause_t wakeupCause = wakeup();
-  if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED)
-  {
+  if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED) {
     // Woke up not from sleep, resetting servos
     resetServos();
 
@@ -41,20 +29,20 @@ void loop()
 
     // After successful WiFI or credential read, hibernate
     hibernateMs(5000);
-  }
-  else
-  {
+  } else {
     // Read WiFi credentials
     Credentials credentials = readCredentials();
 
     // Connect to wifi or make a server to get wifi credentials
     bool connectSuccess = connectAndTestWifi(credentials);
 
-    if (connectSuccess)
-    {
+    if (connectSuccess) {
 
       // Query conditions
       Conditions conditions = requestConditions(DATA_URL, BEACH, POSTER_ID, batteryVoltage);
+
+      // Disconnect from WiFI
+      disconnectWifi();
 
       // TODO: Check to see if conditions match previous conditions and don't move the servos
 
@@ -66,9 +54,7 @@ void loop()
 
       // Hibernate that many ms
       hibernateUntilNextCycle(conditions.timeMs);
-    }
-    else
-    {
+    } else {
       // Query failed, sleep for 1hr
       hibernateMs(CYCLE_TIME_MS);
     }

@@ -31,6 +31,7 @@ Credentials readCredentials();
 void writeCredentials(Credentials);
 bool connectAndTestWifi(Credentials);
 void tryWifiOrSetupAccessPoint(Credentials);
+void disconnectWifi();
 Conditions requestConditions(String, String, String, String);
 void moveServos(Conditions);
 void resetServos();

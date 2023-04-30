@@ -36,7 +36,7 @@ void stopServos()
 
 void moveServos(Conditions conditions)
 {
-  // startServos();
+  startServos();
   for (int i = 0; i < NUM_DIALS; i++)
   {
     Dial dial = DIALS[i];
@@ -51,33 +51,21 @@ void moveServos(Conditions conditions)
         degrees);
 
     servos[i].write(degrees); // tell servo to go to position in variable 'pos'
+    delay(200); // Add gap between movements to lower max current
   }
-  // stopServos();
-}
-
-void moveServosToDeg(int deg)
-{
-  startServos();
-  for (int i = 0; i < NUM_DIALS; i++)
-  {
-    Dial dial = DIALS[i];
-    Serial.printf("Moving dial %s with value to degrees %d\n", dial.key, deg);
-    servos[i].write(deg); // tell servo to go to position in variable 'pos'
-    delay(200); // waits 200ms for the servo to reach the position
-  }
-  delay(200); // waits 200ms for the last servo to reach the position
+  delay(200); // Wait for last servo to get to position
   stopServos();
 }
 
 void resetServos()
 {
-  // startServos();
+  startServos();
   Serial.println("Resetting servos");
   for (int i = 0; i < NUM_DIALS; i++)
   {
     Dial dial = DIALS[i];
     servos[i].write(180);
   }
-  delay(200);
-  // stopServos();
+  delay(400);
+  stopServos();
 }

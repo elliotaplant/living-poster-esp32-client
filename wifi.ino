@@ -30,6 +30,11 @@ void connectWifi(Credentials credentials)
   WiFi.begin(credentials.ssid.c_str(), credentials.password.c_str());
 }
 
+void disconnectWifi()
+{
+  WiFi.disconnect(true);
+}
+
 bool testWifi()
 {
   Serial.print("Testing WiFi connection ");
