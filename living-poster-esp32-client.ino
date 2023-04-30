@@ -8,12 +8,23 @@ void setup()
   // Setup baud rate, pins
   Serial.begin(115200); // Initialize Serial monitor with baud rate
   eepromSetup();
+  setupServos();
   pinsSetup();
 }
 
 // No looping here, just a single pass through
 void loop()
 {
+
+  while (true)
+  {
+    for (int i = 0; i <= 180; i += 10)
+    {
+      moveServosToDeg(i);
+      delay(500);
+    }
+  }
+
   // Not sure why I need to read this here
   String batteryVoltage = String(analogRead(BATTERY_VOLTAGE_PIN));
 

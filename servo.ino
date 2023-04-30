@@ -3,7 +3,7 @@
 Servo servos[NUM_DIALS]; // create servo object to control a servo
 
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
-void startServos()
+void setupServos()
 {
   // Set servo output pin to output
   pinMode(SERVO_CONTROL_PIN, OUTPUT);
@@ -18,18 +18,25 @@ void startServos()
     servos[i].setPeriodHertz(SERVO_PWM_FREQUENCY);
     servos[i].attach(DIALS[i].pin, SERVO_DUTY_CYCLE_LOW, SERVO_DUTY_CYCLE_HIGH);
   }
+}
 
+void startServos()
+{
+  Serial.println("Moving Servo Pin HIGH");
   digitalWrite(SERVO_CONTROL_PIN, HIGH); // Start voltage flow to servos through transistor
+  // delay(400);
 }
 
 void stopServos()
 {
+  // delay(400);                           // waits 200ms for the servos to reach the position
   digitalWrite(SERVO_CONTROL_PIN, LOW); // End voltage flow to servos through transistor
+  Serial.println("Moving Servo Pin LOW");
 }
 
 void moveServos(Conditions conditions)
 {
-  startServos();
+  // startServos();
   for (int i = 0; i < NUM_DIALS; i++)
   {
     Dial dial = DIALS[i];
@@ -45,18 +52,32 @@ void moveServos(Conditions conditions)
 
     servos[i].write(degrees); // tell servo to go to position in variable 'pos'
   }
-  delay(200); // waits 200ms for the servos to reach the position
+  // stopServos();
+}
+
+void moveServosToDeg(int deg)
+{
+  startServos();
+  for (int i = 0; i < NUM_DIALS; i++)
+  {
+    Dial dial = DIALS[i];
+    Serial.printf("Moving dial %s with value to degrees %d\n", dial.key, deg);
+    servos[i].write(deg); // tell servo to go to position in variable 'pos'
+    delay(200); // waits 200ms for the servo to reach the position
+  }
+  delay(200); // waits 200ms for the last servo to reach the position
   stopServos();
 }
 
 void resetServos()
 {
-  startServos();
+  // startServos();
+  Serial.println("Resetting servos");
   for (int i = 0; i < NUM_DIALS; i++)
   {
     Dial dial = DIALS[i];
     servos[i].write(180);
   }
   delay(200);
-  stopServos();
+  // stopServos();
 }
