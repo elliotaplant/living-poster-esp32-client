@@ -19,7 +19,7 @@ void loop() {
 
   // Eventually, handle wifi config with this method
   esp_sleep_wakeup_cause_t wakeupCause = wakeup();
-  if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED && false) { // Skip this branch while we know PW is correct
+  if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED) { // Skip this branch while we know PW is correct
     // Woke up not from sleep, resetting servos
     resetServos();
 
@@ -31,8 +31,7 @@ void loop() {
     hibernateMs(5000);
   } else {
     // Read WiFi credentials
-    // Credentials credentials = readCredentials();
-    Credentials credentials = {"Khal Doggo", "burritopup"};
+    Credentials credentials = readCredentials();
     
     // Connect to wifi or make a server to get wifi credentials
     bool connectSuccess = connectAndTestWifi(credentials);
