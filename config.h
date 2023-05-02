@@ -19,9 +19,9 @@ const int BATTERY_VOLTAGE_PIN = 2;
 // Dials
 const int NUM_DIALS = 3;
 Dial DIALS[NUM_DIALS] = {
+    {"surfHeight", 0, 10, 13},
     {"waterTemp", 55, 80, 12},
     {"windSpeed", 0, 20, 14},
-    {"surfHeight", 0, 10, 13},
 };
 
 #endif
