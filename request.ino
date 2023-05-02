@@ -10,7 +10,7 @@ Conditions requestConditions(
     String posterId,
     String batteryVoltage)
 {
-  Conditions conditions = {0, {0, 0, 0}};
+  Conditions conditions = {0, false, {0, 0, 0}};
 
   String combinedUrl = dataUrl;
   combinedUrl += String("?beach=");
@@ -63,6 +63,7 @@ Conditions requestConditions(
 
             double time = doc["time"];
             conditions.timeMs = time;
+            conditions.valid = true;
             for (int i = 0; i < NUM_DIALS; i++)
             {
               Dial dial = DIALS[i];

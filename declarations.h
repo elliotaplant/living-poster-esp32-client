@@ -12,6 +12,7 @@ struct Dial
 struct Conditions
 {
   uint64_t timeMs;
+  bool valid;
   double values[3];
 };
 

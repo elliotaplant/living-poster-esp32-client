@@ -46,16 +46,23 @@ void loop() {
 
       // TODO: Check to see if conditions match previous conditions and don't move the servos
 
-      // Change the dial angles and interpret conditions to dial angle
-      moveServos(conditions);
+      // Check if conditions have values
+      if (conditions.valid) {
 
-      // Blink to show success
-      blink();
+        // Change the dial angles and interpret conditions to dial angle
+        moveServos(conditions);
 
-      // Hibernate that many ms
-      hibernateUntilNextCycle(conditions.timeMs);
+        // Blink to show success
+        blink();
+
+        // Hibernate that many ms
+        hibernateUntilNextCycle(conditions.timeMs);
+      } else {
+        // Request failed, sleep for 1hr
+        hibernateMs(CYCLE_TIME_MS);
+      }
     } else {
-      // Query failed, sleep for 1hr
+      // WiFi failed, sleep for 1hr
       hibernateMs(CYCLE_TIME_MS);
     }
   }
