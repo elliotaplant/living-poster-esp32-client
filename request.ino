@@ -30,7 +30,6 @@ Conditions requestConditions(
   if (client)
   {
     // Not using an SSL cert because there's no secret info
-    client->setInsecure();
 
     // Create an HTTPClient instance
     HTTPClient https;
