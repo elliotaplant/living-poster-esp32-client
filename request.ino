@@ -8,8 +8,7 @@
 Conditions requestConditions(
   String dataUrl,
   String beach,
-  String posterId,
-  String batteryVoltage) {
+  String posterId) {
   Conditions conditions = { 0, false, { 0, 0, 0 } };
 
   String combinedUrl = dataUrl;
@@ -20,7 +19,7 @@ Conditions requestConditions(
   combinedUrl += String("&millis=");
   combinedUrl += String(millis());
   combinedUrl += String("&battery=");
-  combinedUrl += String(batteryVoltage);
+  combinedUrl += String(analogRead(BATTERY_VOLTAGE_PIN));
 
   Serial.println("Connecting to domain:");
   Serial.println(combinedUrl);

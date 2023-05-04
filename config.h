@@ -14,7 +14,7 @@ const int SERVO_DUTY_CYCLE_HIGH = 2500;
 
 // Pins
 const int SERVO_CONTROL_PIN = 21;
-const int BATTERY_VOLTAGE_PIN = 2;
+const int BATTERY_VOLTAGE_PIN = 36;
 
 // Dials
 const int NUM_DIALS = 3;

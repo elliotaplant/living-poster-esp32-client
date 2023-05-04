@@ -24,12 +24,10 @@ void startServos()
 {
   Serial.println("Setting servo control pin HIGH");
   digitalWrite(SERVO_CONTROL_PIN, HIGH); // Start voltage flow to servos through transistor
-  // delay(400);
 }
 
 void stopServos()
 {
-  // delay(400);                           // waits 200ms for the servos to reach the position
   digitalWrite(SERVO_CONTROL_PIN, LOW); // End voltage flow to servos through transistor
   Serial.println("Setting servo control pin LOW");
 }

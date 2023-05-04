@@ -2,6 +2,7 @@
 #include "declarations.h"
 #include "constants.h"
 #include "config.h"
+#include <Arduino.h>
 
 void setup() {
   // Setup baud rate, pins
@@ -13,10 +14,6 @@ void setup() {
 
 // No looping here, just a single pass through
 void loop() {
-
-  // Not sure why I need to read this here
-  String batteryVoltage = String(analogRead(BATTERY_VOLTAGE_PIN));
-
   // Eventually, handle wifi config with this method
   esp_sleep_wakeup_cause_t wakeupCause = wakeup();
   if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED) { // Skip this branch while we know PW is correct
@@ -39,7 +36,7 @@ void loop() {
     if (connectSuccess) {
 
       // Query conditions
-      Conditions conditions = requestConditions(DATA_URL, BEACH, POSTER_ID, batteryVoltage);
+      Conditions conditions = requestConditions(DATA_URL, BEACH, POSTER_ID);
 
       // Disconnect from WiFI
       disconnectWifi();
