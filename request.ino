@@ -32,26 +32,26 @@ Conditions requestConditions(
     // Not using an SSL cert because there's no secret info
 
     // Create an HTTPClient instance
-    HTTPClient https;
+    HTTPClient http;
 
-    // Initializing an HTTPS communication using the secure client
-    Serial.println("[HTTPS] begin...");
-    if (https.begin(*client, combinedUrl.c_str()))
+    // Initializing an HTTP communication using insecure client
+    Serial.println("[HTTP] begin...");
+    if (http.begin(*client, combinedUrl.c_str()))
     {
-      Serial.println("[HTTPS] GET...");
+      Serial.println("[HTTP] GET...");
       // Start connection and send HTTP header
-      int httpCode = https.GET();
+      int httpCode = http.GET();
       // httpCode will be negative on error
       if (httpCode > 0)
       {
         // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTPS] Code: %d\n", httpCode);
+        Serial.printf("[HTTP] Code: %d\n", httpCode);
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
           // Parse the response as JSON
           DynamicJsonDocument doc(2048);
-          DeserializationError error = deserializeJson(doc, https.getStream());
+          DeserializationError error = deserializeJson(doc, http.getStream());
 
           if (error)
           {
@@ -74,14 +74,14 @@ Conditions requestConditions(
       }
       else
       {
-        Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
       }
-      https.end();
+      http.end();
     }
   }
   else
   {
-    Serial.printf("[HTTPS] Unable to connect\n");
+    Serial.printf("[HTTP] Unable to connect\n");
   }
 
   return conditions;

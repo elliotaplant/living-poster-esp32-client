@@ -53,11 +53,14 @@ void loop() {
         moveServos(conditions);
 
         // Blink to show success
-        blink();
+        blink(true);
 
         // Hibernate that many ms
         hibernateUntilNextCycle(conditions.timeMs);
       } else {
+        // Blink to show failure
+        blink(false);
+
         // Request failed, sleep for 1hr
         hibernateMs(CYCLE_TIME_MS);
       }
