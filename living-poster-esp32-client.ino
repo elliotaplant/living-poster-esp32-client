@@ -52,14 +52,11 @@ void loop() {
         // Change the dial angles and interpret conditions to dial angle
         moveServos(conditions);
 
-        // Blink to show success
-        blink(true);
-
         // Hibernate that many ms
         hibernateUntilNextCycle(conditions.timeMs);
       } else {
         // Blink to show failure
-        blink(false);
+        blink();
 
         // Request failed, sleep for 1hr
         hibernateMs(CYCLE_TIME_MS);

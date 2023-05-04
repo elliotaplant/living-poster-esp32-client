@@ -3,7 +3,7 @@
 
 struct Dial
 {
-  String key;
+  char key[32];
   double rangeLow;
   double rangeHigh;
   int pin;
