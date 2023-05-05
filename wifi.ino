@@ -38,7 +38,7 @@ void disconnectWifi()
 bool testWifi()
 {
   Serial.println("Testing WiFi connection");
-  for (int i = 0; i < 60; i++)
+  for (int i = 0; i < 20; i++)
   {
     if (WiFi.status() == WL_CONNECTED)
     {
@@ -46,7 +46,7 @@ bool testWifi()
       Serial.println("WiFi connection successful");
       return true;
     }
-    delay(1000);
+    delay(500);
     Serial.print("*");
   }
   Serial.println();
