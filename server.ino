@@ -3,7 +3,7 @@
 // Server to gather WiFi credentials
 WebServer *createWebServer(String ssidOptions)
 {
-  WebServer *server = new WebServer(80);
+  WebServer *server = new WebServer(SERVER_IP, 80);
 
   // this is a capture?
   server->on("/", [ssidOptions, server]()
