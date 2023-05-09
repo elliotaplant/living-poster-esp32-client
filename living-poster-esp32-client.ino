@@ -16,7 +16,7 @@ void setup() {
 void loop() {
   // Eventually, handle wifi config with this method
   esp_sleep_wakeup_cause_t wakeupCause = wakeup();
-  if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED) { // Skip this branch while we know PW is correct
+  if (wakeupCause == ESP_SLEEP_WAKEUP_UNDEFINED) { 
     // Woke up not from sleep, resetting servos
     resetServos();
 

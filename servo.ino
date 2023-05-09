@@ -40,6 +40,7 @@ void moveServos(Conditions conditions)
     Dial dial = DIALS[i];
     double value = conditions.values[i];
     double pct = (value - dial.rangeLow) / (dial.rangeHigh - dial.rangeLow);
+    pct = constrain(pct, 0, 1);
     double degrees = 180 * (1 - pct); // Negative because the rotation is reversed
     Serial.printf(
         "Moving dial %s with value %f (pct %f) to degrees %f\n",

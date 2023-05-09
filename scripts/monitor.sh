@@ -1,1 +1,1 @@
-arduino-cli monitor -p <REPLACE_WITH_REAL_PORT>;
+arduino-cli monitor -p /dev/cu.usbserial-D30DOR0H;
