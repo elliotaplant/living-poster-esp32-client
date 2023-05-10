@@ -24,7 +24,4 @@ Dial DIALS[NUM_DIALS] = {
     {"windSpeed", 0, 40, 32},
 };
 
-// Server
-const IPAddress SERVER_IP = new IPAddress(10, 0, 0, 1);
-
 #endif

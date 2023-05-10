@@ -7,7 +7,7 @@ void setupAccessPoint()
 
   delay(100);
   Serial.println("Creating access point for WiFi credential modification");
-  WiFi.softAP("Living Poster WiFi Setup", "");
+  WiFi.softAP("Surf Poster", NULL);
   if (WiFi.status() == WL_CONNECTED)
     Serial.println("WiFi connected");
 
