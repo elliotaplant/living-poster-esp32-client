@@ -16,7 +16,7 @@ void setupServos()
   for (int i = 0; i < NUM_DIALS; i++)
   {
     servos[i].setPeriodHertz(SERVO_PWM_FREQUENCY);
-    servos[i].attach(DIALS[i].pin, SERVO_DUTY_CYCLE_LOW, SERVO_DUTY_CYCLE_HIGH);
+    servos[i].attach(DIALS[i].pin); // , SERVO_DUTY_CYCLE_LOW, SERVO_DUTY_CYCLE_HIGH);
   }
 }
 
@@ -41,7 +41,7 @@ void moveServos(Conditions conditions)
     double value = conditions.values[i];
     double pct = (value - dial.rangeLow) / (dial.rangeHigh - dial.rangeLow);
     pct = constrain(pct, 0, 1);
-    double degrees = 180 * (1 - pct); // Negative because the rotation is reversed
+    double degrees = 180 * (0 + pct); // Negative because the rotation is reversed
     Serial.printf(
         "Moving dial %s with value %f (pct %f) to degrees %f\n",
         dial.key,
@@ -63,7 +63,7 @@ void resetServos()
   for (int i = 0; i < NUM_DIALS; i++)
   {
     Dial dial = DIALS[i];
-    servos[i].write(180);
+    servos[i].write(0); // usually 180, but these servos are negative
   }
   delay(400);
   stopServos();
